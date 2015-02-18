@@ -1,0 +1,22 @@
+{
+  "MulticastAddress": "224.1.2.3:8000",
+  "CertFilePath": "cert.pem",
+  "KeyFilePath": "key.pem",
+  "LogDirectory": "../log",
+  "StateDirectory": "../state",
+  "RedirectionConfig": [
+    {
+      "Path": "/",
+      "Name": "ExperimentManager"
+    },
+    {
+      "Path": "/storage",
+      "Name": "StorageManager"
+    },
+    {
+      "Path": "/information",
+      "Name": "InformationService",
+      "DisableStatusChecking": true
+    }
+  ]
+}
