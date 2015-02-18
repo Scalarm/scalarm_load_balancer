@@ -22,11 +22,11 @@ Installation
 -------------- 
 Run this command to download load balancer: 
 ``` 
-go get github.com/mwrona/scalarm_load_balancer 
+go get github.com/Scalarm/scalarm_load_balancer 
 ``` 
 Now you can install it: 
 ```` 
-go install github.com/mwrona/scalarm_load_balancer
+go install github.com/Scalarm/scalarm_load_balancer
 ```` 
 This command will install load balancer in $GOPATH/bin. It's name will be scalarm_load_balancer 
 Config 
