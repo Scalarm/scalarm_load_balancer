@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/mwrona/scalarm_load_balancer/services"
+	"github.com/scalarm/scalarm_load_balancer/services"
 )
 
 func messageWriter(query, message string, w http.ResponseWriter) {
@@ -52,9 +52,9 @@ func Registration(address string, sl *services.List, w http.ResponseWriter, r *h
 	}
 }
 
-func Unregistration(address string, sl *services.List, w http.ResponseWriter, r *http.Request) {
+func Deregistration(address string, sl *services.List, w http.ResponseWriter, r *http.Request) {
 	sl.UnregisterService(address)
-	messageWriter(r.URL.String(), fmt.Sprintf("Unregistered %s: %s", sl.Name(), address), w)
+	messageWriter(r.URL.String(), fmt.Sprintf("Deregistered %s: %s", sl.Name(), address), w)
 }
 
 func printServicesList(sl *services.List, w http.ResponseWriter) {

@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/mwrona/scalarm_load_balancer/services"
+	"github.com/scalarm/scalarm_load_balancer/services"
 )
 
 type httpError struct {

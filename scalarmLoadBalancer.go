@@ -9,9 +9,9 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/mwrona/scalarm_load_balancer/handler"
-	"github.com/mwrona/scalarm_load_balancer/services"
 	"github.com/natefinch/lumberjack"
+	"github.com/scalarm/scalarm_load_balancer/handler"
+	"github.com/scalarm/scalarm_load_balancer/services"
 )
 
 func main() {
@@ -63,11 +63,11 @@ func main() {
 			context,
 			handler.ServicesManagment(handler.Registration))))
 
-	http.Handle("/unregister", handler.Authentication(
+	http.Handle("/deregister", handler.Authentication(
 		config.PrivateLoadBalancerAddress,
 		handler.Context(
 			context,
-			handler.ServicesManagment(handler.Unregistration))))
+			handler.ServicesManagment(handler.Deregistration))))
 
 	http.Handle("/list", handler.Context(context, handler.List))
 
