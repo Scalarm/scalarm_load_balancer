@@ -29,13 +29,15 @@ type appContext struct {
 	redirectionsList   services.TypesMap
 	servicesTypesList  services.TypesMap
 	loadBalancerScheme string
+	verbose            bool
 }
 
-func AppContext(redirectionsList, servicesTypesList services.TypesMap, loadBalancerScheme string) *appContext {
+func AppContext(redirectionsList, servicesTypesList services.TypesMap, loadBalancerScheme string, verbose bool) *appContext {
 	return &appContext{
 		redirectionsList:   redirectionsList,
 		servicesTypesList:  servicesTypesList,
 		loadBalancerScheme: loadBalancerScheme,
+		verbose:            verbose,
 	}
 }
 
