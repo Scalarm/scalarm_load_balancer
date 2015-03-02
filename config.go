@@ -18,6 +18,7 @@ type Config struct {
 	KeyFilePath                string
 	LogDirectory               string
 	StateDirectory             string
+	Verbose                    bool
 	RedirectionConfig          []services.RedirectionPolicy
 }
 

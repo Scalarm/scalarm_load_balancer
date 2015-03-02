@@ -10,8 +10,16 @@ import (
 	"github.com/scalarm/scalarm_load_balancer/services"
 )
 
+func cut_params(url string) string {
+	return strings.Split(url, "?")[0]
+}
+
 func redirectToError(context *appContext, req *http.Request, err error) {
-	log.Printf("%v\nUnable to redirect: %v", req.URL.RequestURI(), err.Error())
+	if context.verbose {
+		log.Printf("%v\nUnable to redirect: %v", req.URL.RequestURI(), err.Error())
+	} else {
+		log.Printf("%v\nUnable to redirect: %v", cut_params(req.URL.RequestURI()), err.Error())
+	}
 
 	values := url.Values{}
 	values.Add("message", err.Error())
@@ -62,6 +70,10 @@ func ReverseProxyDirector(context *appContext) func(*http.Request) {
 		req.URL.Host = host
 		req.URL.Path = path
 
-		log.Printf("%v \nredirect to %v\n\n", oldURL, req.URL)
+		if context.verbose {
+			log.Printf("%v \nredirect to %v\n\n", oldURL, req.URL)
+		} else {
+			log.Printf("%v \nredirect to %v\n\n", cut_params(oldURL), cut_params(req.URL.RequestURI()))
+		}
 	}
 }

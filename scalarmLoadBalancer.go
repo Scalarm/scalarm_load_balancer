@@ -44,7 +44,8 @@ func main() {
 	context := handler.AppContext(
 		redirectionsList,
 		servicesTypesList,
-		config.LoadBalancerScheme)
+		config.LoadBalancerScheme,
+		config.Verbose)
 
 	//disabling certificate checking
 	TLSClientConfigCert := &tls.Config{InsecureSkipVerify: true}
