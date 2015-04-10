@@ -16,7 +16,7 @@ func messageWriter(query, message string, w http.ResponseWriter) {
 func Authentication(allowedAddress string, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Host != "localhost" && r.Host != allowedAddress {
-			http.Error(w, fmt.Sprintf("This type of request from remote client (%s) is forbidden", r.Host), service_name), 403)
+			http.Error(w, fmt.Sprintf("This type of request from remote client (%s) is forbidden", r.Host), 403)
 			return
 		}
 
