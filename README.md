@@ -51,21 +51,26 @@ Example of config.json:
 
 
 Description:
-* LoadBalancerScheme - optional, by default: "https"; protocol on which load balancer works 
-* Port - optional, by default 443 (https) or 80 (http), depends on the LoadBalancerScheme; the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
-* MulticastAddress - address used to distribute load balancer private address
-* PrivateLoadBalancerAddress - optional, by default: "localhost"; this address is send via multicast, registration to load balancer is possible only from this address and from localhost
-* CertFilePath, KeyFilePath - needed only when LoadBalancerScheme is "https"; path co certificate files, by default CertFilePath: "cert.pem"; KeyFilePath: "key.pem"
-* LogDirectory - optional, by default "log"; directory where logs are stored. 
-* StateDirectory - optional, by default ""; directory where current state of load balancer is saved.
-* RedirectionConfig - config of redirection policy: 
- * Path - path to service
- * Name - name of service type
- * DisableStatusChecking - optional, by default: false; disabling periodical status checking
- * Scheme - optional, by default: "http"; service scheme
- * StatusPath - optional, by default "/status"; path to status check
- * SecondsBetweenChecking - optional, by default 30; time beetwen periodical status checking; must be greater than zero
- * FailedConnectionsLimit - optional, by default 6; number of failed status checking before removing service; must be greater than zero
+
+| Field  | Default value | Description |
+| :--  | :--: | :-- |
+| LoadBalancerScheme  | "https" | ```OPTIONAL``` protocol on which load balancer works | 
+| Port  | 443 (https) or 80 (http) | ```OPTIONAL``` depends on the LoadBalancerScheme; the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
+| MulticastAddress  |  | address used to distribute load balancer private address
+| PrivateLoadBalancerAddress  | "localhost" | ```OPTIONAL``` this address is send via multicast, registration to load balancer is possible only from this address and from localhost
+| CertFilePath  | "cert.pem" | ```OPTIONAL``` needed only when LoadBalancerScheme is "https"; path co certificate file
+| KeyFilePath | "key.pem" | ```OPTIONAL``` needed only when LoadBalancerScheme is "https"; path co certificate file
+| LogDirectory  | "log" | ```OPTIONAL``` directory where logs are stored. 
+| StateDirectory  | "state" | ```OPTIONAL``` directory where current state of load balancer is saved.
+| Verbose  | false | ```OPTIONAL``` verbosity of logs
+| RedirectionConfig || config of redirection policy| 
+| &nbsp;&nbsp;&nbsp;&nbsp;Path | | path to service
+| &nbsp;&nbsp;&nbsp;&nbsp;Name | | name of service type
+| &nbsp;&nbsp;&nbsp;&nbsp;DisableStatusChecking |false | ```OPTIONAL``` disabling periodical status checking
+| &nbsp;&nbsp;&nbsp;&nbsp;Scheme | "http" | ```OPTIONAL``` service scheme
+| &nbsp;&nbsp;&nbsp;&nbsp;StatusPath | "/status" | ```OPTIONAL``` path to status check
+| &nbsp;&nbsp;&nbsp;&nbsp;SecondsBetweenChecking | 30| ```OPTIONAL``` time beetwen periodical status checking; must be greater than zero
+| &nbsp;&nbsp;&nbsp;&nbsp;FailedConnectionsLimit | 6| ```OPTIONAL``` number of failed status checking before removing service; must be greater than zero
 
 Note: MulticastAddress must be the same as in experiment manager and other services to work properly.
 
@@ -125,7 +130,9 @@ LOCAL_LOAD_BALANCER_ADDRESS="localhost"
 
 API
 -----
-* /list - with parameter 'name' or without (it will print all services)
-* /register - POST with parameter 'address' and 'name'
-* /deregister - POST with parameter 'address' and 'name'
-* /< Path > - redirection to service
+| Method | Path | Params | Description
+|:--|:--|:--| :-- |
+| GET | /list | ```OPTIONAL```'name' | Prints all register services (with possible narrowing to specific service)
+| POST | /register |  'address', 'name' | registering given with 'address' service 'name' 
+| POST | /deregister | 'address', 'name' | deregistering given with 'address' from service  'name'
+| any |  /< Path > | any | redirection to service
