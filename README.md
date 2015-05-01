@@ -53,7 +53,7 @@ Example of config.json:
 Description:
 
 | Field  | Default value | Description |
-| :--  | :--: | :-- |
+| :--  | :-- | :-- |
 | LoadBalancerScheme  | "https" | ```OPTIONAL``` protocol on which load balancer works | 
 | Port  | 443 (https) or 80 (http) | ```OPTIONAL``` depends on the LoadBalancerScheme; the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
 | MulticastAddress  |  | address used to distribute load balancer private address
