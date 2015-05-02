@@ -58,8 +58,8 @@ Description:
 | Port  | 443 (https) or 80 (http) | ```OPTIONAL``` depends on the LoadBalancerScheme; the port on which the server listens, if port is 443 server listens also on 80 and redirects all queries to https
 | MulticastAddress  |  | address used to distribute load balancer private address
 | PrivateLoadBalancerAddress  | "localhost" | ```OPTIONAL``` this address is send via multicast, registration to load balancer is possible only from this address and from localhost
-| CertFilePath  | "cert.pem" | ```OPTIONAL``` needed only when LoadBalancerScheme is "https"; path co certificate file
-| KeyFilePath | "key.pem" | ```OPTIONAL``` needed only when LoadBalancerScheme is "https"; path co certificate file
+| CertFilePath  | "cert.pem" | ```OPTIONAL``` needed only when LoadBalancerScheme is "https"; path to certificate file
+| KeyFilePath | "key.pem" | ```OPTIONAL``` needed only when LoadBalancerScheme is "https"; path to certificate file
 | LogDirectory  | "log" | ```OPTIONAL``` directory where logs are stored. 
 | StateDirectory  | "state" | ```OPTIONAL``` directory where current state of load balancer is saved.
 | Verbose  | false | ```OPTIONAL``` verbosity of logs
@@ -78,7 +78,7 @@ Note: MulticastAddress must be the same as in experiment manager and other servi
 
 ~~Instruction to generate self-signed certificate(steps 1-4): http://www.akadia.com/services/ssh_test_certificate.html~~
 
-For now certificates checking is disable.
+For now certificates checking is disabled.
 
 Run 
 ----
