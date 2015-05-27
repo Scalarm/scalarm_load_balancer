@@ -36,12 +36,11 @@ func LoadConfig(filename string) (*Config, error) {
 	if config.MulticastAddress == "" {
 		return nil, fmt.Errorf("Multicast address is missing")
 	}
-	if config.PrivateLoadBalancerAddress == "" {
-		config.PrivateLoadBalancerAddress = "localhost"
-	}
+
 	if config.LoadBalancerScheme == "" {
 		config.LoadBalancerScheme = "https"
 	}
+
 	if config.Port == "" {
 		if config.LoadBalancerScheme == "https" {
 			config.Port = "443"
@@ -49,6 +48,11 @@ func LoadConfig(filename string) (*Config, error) {
 			config.Port = "80"
 		}
 	}
+
+	if config.PrivateLoadBalancerAddress == "" {
+		config.PrivateLoadBalancerAddress = "localhost:" + config.Port
+	}
+
 	if config.LoadBalancerScheme != "https" && config.LoadBalancerScheme != "http" {
 		return nil, fmt.Errorf("Unsuported protocol in LoadBalancerScheme")
 	}
