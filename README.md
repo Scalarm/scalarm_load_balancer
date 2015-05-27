@@ -48,7 +48,11 @@ Example of config.json:
 }
 
 ````
-
+When using starting scripts with default log and state folders include in config: 
+```
+	"LogDirectory" : "../log",
+	"StateDirectory" : "../state",
+```
 
 Description:
 
@@ -61,7 +65,7 @@ Description:
 | CertFilePath  | "cert.pem" | ```OPTIONAL``` needed only when LoadBalancerScheme is "https"; path to certificate file
 | KeyFilePath | "key.pem" | ```OPTIONAL``` needed only when LoadBalancerScheme is "https"; path to certificate file
 | LogDirectory  | "log" | ```OPTIONAL``` directory where logs are stored. 
-| StateDirectory  | "state" | ```OPTIONAL``` directory where current state of load balancer is saved.
+| StateDirectory  | "" | ```OPTIONAL``` directory where current state of load balancer is saved. By default current directory.
 | Verbose  | false | ```OPTIONAL``` verbosity of logs
 | RedirectionConfig || config of redirection policy| 
 | &nbsp;&nbsp;&nbsp;&nbsp;Path | | path to service
