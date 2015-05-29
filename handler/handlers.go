@@ -94,8 +94,7 @@ func List(context *appContext, w http.ResponseWriter, r *http.Request) error {
 func RedirectionError(w http.ResponseWriter, req *http.Request) {
 	message := req.FormValue("message")
 	if message != "" {
-		http.Error(w, message, 404)
-	} else {
-		http.Error(w, "Service list is empty or all services are not responding.", 404)
+		message = "Service list is empty or no service instance is responding."
 	}
+	http.Error(w, message, 502)
 }

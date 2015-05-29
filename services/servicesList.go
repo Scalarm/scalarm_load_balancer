@@ -164,7 +164,7 @@ func (sl *List) GetNext() (string, error) {
 		sl.it = (sl.it + 1) % len(sl.list)
 		lenght--
 		if lenght == 0 {
-			return "", fmt.Errorf("All services are not responding")
+			return "", fmt.Errorf("No service instance is responding.")
 		}
 	}
 
