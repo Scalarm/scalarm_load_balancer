@@ -56,7 +56,7 @@ func main() {
 	//setting routing
 	director := handler.ReverseProxyDirector(context)
 	reverseProxy := &httputil.ReverseProxy{Director: director, Transport: TransportCert}
-	http.Handle("/", handler.Context(nil, handler.Websocket(director, reverseProxy)))
+	http.Handle("/", handler.ContextWithoutLogging(nil, handler.Websocket(director, reverseProxy)))
 
 	// setting registrations handlers
 	registrationHandler := handler.Context(context, handler.ServicesManagment(handler.Registration))

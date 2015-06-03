@@ -44,18 +44,29 @@ func AppContext(redirectionsList, servicesTypesList services.TypesMap, loadBalan
 type contextHandlerFunction func(*appContext, http.ResponseWriter, *http.Request) error
 
 type contextHandler struct {
-	context *appContext
-	f       contextHandlerFunction
+	context        *appContext
+	f              contextHandlerFunction
+	disableLogging bool
 }
 
 func (ch contextHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	code := 200
+	message := ""
 	err, _ := ch.f(ch.context, w, r).(*httpError)
 	if err != nil {
-		log.Printf("%s\nResponse: %v; %s\n\n", r.URL.RequestURI(), err.Code(), err.Error())
-		http.Error(w, err.Error(), err.Code())
+		code = err.Code()
+		message = err.Error()
+		jsonStatusResponseWriter(w, err.Error(), err.Code())
+	}
+	if !ch.disableLogging {
+		log.Printf("[%s] %q Responce: %v %v\n", r.Method, r.URL.String(), code, message)
 	}
 }
 
 func Context(context *appContext, f contextHandlerFunction) http.Handler {
-	return contextHandler{context, f}
+	return contextHandler{context, f, false}
+}
+
+func ContextWithoutLogging(context *appContext, f contextHandlerFunction) http.Handler {
+	return contextHandler{context, f, true}
 }

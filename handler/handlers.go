@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,16 +9,27 @@ import (
 	"github.com/scalarm/scalarm_load_balancer/services"
 )
 
-func messageWriter(query, message string, w http.ResponseWriter) {
-	log.Printf("%s\nResponse: %s\n\n", query, message)
-	fmt.Fprintf(w, message)
+func jsonResponseWriter(w http.ResponseWriter, res interface{}) {
+	js, err := json.Marshal(res)
+	if err != nil {
+		http.Error(w, "Internal server error, unable to parse json response", 500)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+func jsonStatusResponseWriter(w http.ResponseWriter, reason string, code int) {
+	w.WriteHeader(code)
+	jsonResponseWriter(w, map[string]interface{}{"status": code, "message": reason})
 }
 
 func Authentication(allowedAddress string, h http.Handler) http.Handler {
+	code := 403
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Host != "localhost" && r.Host != allowedAddress {
-			log.Printf("Request on forbidden host [%s] rejected.", r.Host)
-			http.Error(w, fmt.Sprintf("This type of request on host [%s] is forbidden", r.Host), 403)
+			message := fmt.Sprintf("Request on forbidden host [%v] rejected", r.Host)
+			log.Printf("[%v] %q Responce: %v %v\n", r.Method, r.URL.String(), code, message)
+			jsonStatusResponseWriter(w, message, code)
 			return
 		}
 
@@ -46,37 +58,26 @@ func ServicesManagment(f func(string, *services.List, http.ResponseWriter, *http
 }
 
 func Registration(address string, sl *services.List, w http.ResponseWriter, r *http.Request) {
+	responce := fmt.Sprintf("Registered new %s: %s", sl.Name(), address)
 	if err := sl.AddService(address); err == nil {
-		messageWriter(r.URL.String(), fmt.Sprintf("Registered new %s: %s", sl.Name(), address), w)
-	} else {
-		messageWriter(r.URL.String(), err.Error(), w)
+		responce = err.Error()
 	}
+	jsonStatusResponseWriter(w, responce, 200)
 }
 
 func Deregistration(address string, sl *services.List, w http.ResponseWriter, r *http.Request) {
 	sl.UnregisterService(address)
-	messageWriter(r.URL.String(), fmt.Sprintf("Deregistered %s: %s", sl.Name(), address), w)
-}
-
-func printServicesList(sl *services.List, w http.ResponseWriter) {
-	fmt.Fprintf(w, "%s:\n", sl.Name())
-	for _, val := range sl.AddressesList() {
-		fmt.Fprintf(w, "\t%v\n", val)
-	}
-}
-
-func printAllServicesList(slt services.TypesMap, w http.ResponseWriter) {
-	for _, sl := range slt {
-		printServicesList(sl, w)
-		fmt.Fprintln(w)
-	}
+	jsonStatusResponseWriter(w, fmt.Sprintf("Deregistered %s: %s", sl.Name(), address), 200)
 }
 
 func List(context *appContext, w http.ResponseWriter, r *http.Request) error {
 	service_name := r.FormValue("name")
 	if service_name == "" {
-		printAllServicesList(context.servicesTypesList, w)
-		log.Printf("%s\nMessage: all services list\n\n", r.URL.String())
+		responce := map[string][]string{}
+		for _, sl := range context.servicesTypesList {
+			responce[sl.Name()] = sl.AddressesList()
+		}
+		jsonResponseWriter(w, responce)
 		return nil
 	}
 
@@ -84,10 +85,7 @@ func List(context *appContext, w http.ResponseWriter, r *http.Request) error {
 	if ok == false {
 		return newHTTPError(fmt.Sprintf("Service %s does not exist", service_name), 412)
 	}
-	log.Printf("%s\nMessage: %s list\n\n", r.URL.String(), sl.Name())
-
-	printServicesList(sl, w)
-
+	jsonResponseWriter(w, sl.AddressesList())
 	return nil
 }
 
@@ -96,5 +94,5 @@ func RedirectionError(w http.ResponseWriter, req *http.Request) {
 	if message != "" {
 		message = "Service list is empty or no service instance is responding."
 	}
-	http.Error(w, message, 502)
+	jsonStatusResponseWriter(w, message, 502)
 }
