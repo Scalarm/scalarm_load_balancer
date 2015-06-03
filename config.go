@@ -10,16 +10,20 @@ import (
 )
 
 type Config struct {
-	Port                       string
-	MulticastAddress           string
-	PrivateLoadBalancerAddress string
-	LoadBalancerScheme         string
-	CertFilePath               string
-	KeyFilePath                string
-	LogDirectory               string
-	StateDirectory             string
-	Verbose                    bool
-	RedirectionConfig          []services.RedirectionPolicy
+	Port                          string
+	MulticastAddress              string
+	PrivateLoadBalancerAddress    string
+	LoadBalancerScheme            string
+	CertFilePath                  string
+	KeyFilePath                   string
+	LogDirectory                  string
+	StateDirectory                string
+	Verbose                       bool
+	RedirectionConfig             []services.RedirectionPolicy
+	DisableRegistrationHostFilter bool
+	EnableBasicAuth               bool
+	BasicAuthLogin                string
+	BasicAuthPassword             string
 }
 
 func LoadConfig(filename string) (*Config, error) {
@@ -70,6 +74,9 @@ func LoadConfig(filename string) (*Config, error) {
 	}
 	if !strings.HasSuffix(config.StateDirectory, "/") && config.StateDirectory != "" {
 		config.StateDirectory += "/"
+	}
+	if config.EnableBasicAuth && (config.BasicAuthLogin == "" || config.BasicAuthPassword == "") {
+		return nil, fmt.Errorf("Missing basic auth credentials")
 	}
 
 	return config, nil
