@@ -63,8 +63,8 @@ func main() {
 	deregistrationHandler := handler.Context(context, handler.ServicesManagment(handler.Deregistration))
 	// wrapping registration handlers into host filter
 	if !config.DisableRegistrationHostFilter {
-		registrationHandler = handler.Authentication(config.PrivateLoadBalancerAddress, registrationHandler)
-		deregistrationHandler = handler.Authentication(config.PrivateLoadBalancerAddress, deregistrationHandler)
+		registrationHandler = handler.HostFilter(config.PrivateLoadBalancerAddress, registrationHandler)
+		deregistrationHandler = handler.HostFilter(config.PrivateLoadBalancerAddress, deregistrationHandler)
 	}
 	//wrapping registration handlers into basic auth
 	if config.EnableBasicAuth {

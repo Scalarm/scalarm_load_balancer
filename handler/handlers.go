@@ -23,7 +23,7 @@ func jsonStatusResponseWriter(w http.ResponseWriter, reason string, code int) {
 	jsonResponseWriter(w, map[string]interface{}{"status": code, "message": reason})
 }
 
-func Authentication(allowedAddress string, h http.Handler) http.Handler {
+func HostFilter(allowedAddress string, h http.Handler) http.Handler {
 	code := 403
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Host != "localhost" && r.Host != allowedAddress {
