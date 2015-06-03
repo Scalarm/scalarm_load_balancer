@@ -65,7 +65,7 @@ func Websocket(director func(*http.Request), h http.Handler) contextHandlerFunct
 		}
 		defer nc.Close()
 
-		//copying requst to target and responce to client
+		//copying requst to target and response to client
 		err = req.Write(d)
 		if err != nil {
 			log.Printf("Websocket connection failed: %v", err.Error())

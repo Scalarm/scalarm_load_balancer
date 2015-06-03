@@ -58,11 +58,11 @@ func ServicesManagment(f func(string, *services.List, http.ResponseWriter, *http
 }
 
 func Registration(address string, sl *services.List, w http.ResponseWriter, r *http.Request) {
-	responce := fmt.Sprintf("Registered new %s: %s", sl.Name(), address)
+	response := fmt.Sprintf("Registered new %s: %s", sl.Name(), address)
 	if err := sl.AddService(address); err == nil {
-		responce = err.Error()
+		response = err.Error()
 	}
-	jsonStatusResponseWriter(w, responce, 200)
+	jsonStatusResponseWriter(w, response, 200)
 }
 
 func Deregistration(address string, sl *services.List, w http.ResponseWriter, r *http.Request) {
@@ -73,11 +73,11 @@ func Deregistration(address string, sl *services.List, w http.ResponseWriter, r 
 func List(context *appContext, w http.ResponseWriter, r *http.Request) error {
 	service_name := r.FormValue("name")
 	if service_name == "" {
-		responce := map[string][]string{}
+		response := map[string][]string{}
 		for _, sl := range context.servicesTypesList {
-			responce[sl.Name()] = sl.AddressesList()
+			response[sl.Name()] = sl.AddressesList()
 		}
-		jsonResponseWriter(w, responce)
+		jsonResponseWriter(w, response)
 		return nil
 	}
 
