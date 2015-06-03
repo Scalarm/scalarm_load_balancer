@@ -35,16 +35,28 @@ The config consists of config.json, cert.pem and key.pem. The cert.pem and key.p
 Example of config.json:
 ````
 {
-	"MulticastAddress": "224.1.2.3:8000", 
-	"CertFilePath": "cert.pem",
-	"KeyFilePath": "key.pem",
-	"LogDirectory" : "../log",
-	"StateDirectory" : "../state",
-	"RedirectionConfig" : [
-		{"Path": "/", 			 "Name": "ExperimentManager"},
-		{"Path": "/storage", 	 "Name": "StorageManager"},
-		{"Path": "/information", "Name": "InformationService", "DisableStatusChecking": true}
-	]
+{
+  "MulticastAddress": "224.1.2.3:8000",
+  "CertFilePath": "cert.pem",
+  "KeyFilePath": "key.pem",
+  "LogDirectory": "../log",
+  "StateDirectory": "../state",
+  "RedirectionConfig": [
+    {
+      "Path": "/",
+      "Name": "ExperimentManager"
+    },
+    {
+      "Path": "/storage",
+      "Name": "StorageManager"
+    },
+    {
+      "Path": "/information",
+      "Name": "InformationService",
+      "DisableStatusChecking": true
+    }
+  ]
+}
 }
 
 ````
