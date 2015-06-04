@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/scalarm/scalarm_load_balancer/services"
@@ -50,16 +49,16 @@ type contextHandler struct {
 }
 
 func (ch contextHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	code := 200
+	code := http.StatusOK
 	message := ""
 	err, _ := ch.f(ch.context, w, r).(*httpError)
 	if err != nil {
 		code = err.Code()
 		message = err.Error()
-		jsonStatusResponseWriter(w, err.Error(), err.Code())
+		jsonStatusResponseWriter(w, message, code)
 	}
 	if !ch.disableLogging {
-		log.Printf("[%s] %q Responce: %v %v\n", r.Method, r.URL.String(), code, message)
+		logRequest(r.Method, r.URL.String(), code, message)
 	}
 }
 

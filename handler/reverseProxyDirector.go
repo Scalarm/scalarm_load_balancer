@@ -2,7 +2,6 @@ package handler
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -10,7 +9,9 @@ import (
 	"github.com/scalarm/scalarm_load_balancer/services"
 )
 
-func cut_params(url string, verbose bool) string {
+const redirectionErrorCode = http.StatusBadGateway
+
+func filterParams(url string, verbose bool) string {
 	if verbose {
 		return url
 	}
@@ -18,8 +19,7 @@ func cut_params(url string, verbose bool) string {
 }
 
 func redirectToError(context *appContext, req *http.Request, err error) {
-	log.Printf("[%v] %q Unable to redirect: %v", req.Method,
-		cut_params(req.URL.RequestURI(), context.verbose), err.Error())
+	logRequest(req.Method, filterParams(req.URL.RequestURI(), context.verbose), redirectionErrorCode, err.Error())
 
 	values := url.Values{}
 	values.Add("message", err.Error())
@@ -70,7 +70,7 @@ func ReverseProxyDirector(context *appContext) func(*http.Request) {
 		req.URL.Host = host
 		req.URL.Path = path
 
-		log.Printf("[%v] %q redirect to %q\n", req.Method, cut_params(oldURL, context.verbose),
-			cut_params(req.URL.RequestURI(), context.verbose))
+		logRequest(req.Method, filterParams(oldURL, context.verbose), http.StatusOK,
+			fmt.Sprintf("redirected to %v", filterParams(req.URL.RequestURI(), context.verbose)))
 	}
 }
