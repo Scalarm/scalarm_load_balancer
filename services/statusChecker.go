@@ -22,7 +22,7 @@ func (sl *List) checkState() {
 		if sl.list[i].failedConnections <= sl.failedConnectionsLimit {
 			resp, err := http.Get(fmt.Sprintf("%v://%v%v", sl.scheme, sl.list[i].address, sl.statusPath))
 
-			if err != nil || resp.StatusCode != 200 { // TODO
+			if err != nil || resp.StatusCode != http.StatusOK { // TODO
 				sl.updateFailedConnections(i, sl.list[i].failedConnections+1)
 			} else {
 				resp.Body.Close()
