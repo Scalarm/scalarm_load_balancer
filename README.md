@@ -35,16 +35,26 @@ The config consists of config.json, cert.pem and key.pem. The cert.pem and key.p
 Example of config.json:
 ````
 {
-	"MulticastAddress": "224.1.2.3:8000", 
-	"CertFilePath": "cert.pem",
-	"KeyFilePath": "key.pem",
-	"LogDirectory" : "../log",
-	"StateDirectory" : "../state",
-	"RedirectionConfig" : [
-		{"Path": "/", 			 "Name": "ExperimentManager"},
-		{"Path": "/storage", 	 "Name": "StorageManager"},
-		{"Path": "/information", "Name": "InformationService", "DisableStatusChecking": true}
-	]
+  "MulticastAddress": "224.1.2.3:8000",
+  "CertFilePath": "cert.pem",
+  "KeyFilePath": "key.pem",
+  "LogDirectory": "../log",
+  "StateDirectory": "../state",
+  "RedirectionConfig": [
+    {
+      "Path": "/",
+      "Name": "ExperimentManager"
+    },
+    {
+      "Path": "/storage",
+      "Name": "StorageManager"
+    },
+    {
+      "Path": "/information",
+      "Name": "InformationService",
+      "DisableStatusChecking": true
+    }
+  ]
 }
 
 ````
@@ -64,6 +74,10 @@ Description:
 | PrivateLoadBalancerAddress  | "localhost" | ```OPTIONAL``` this address is send via multicast, registration to load balancer is possible only from this address and from localhost
 | CertFilePath  | "cert.pem" | ```OPTIONAL``` needed only when LoadBalancerScheme is "https"; path to certificate file
 | KeyFilePath | "key.pem" | ```OPTIONAL``` needed only when LoadBalancerScheme is "https"; path to certificate file
+| DisableRegistrationHostFilter | false | ```OPTIONAL``` disbales default host filter for registration/deregistration requests
+| EnableBasicAuth | false | ```OPTIONAL``` activates basic auth on registration/deregistration requests
+| BasicAuthLogin | | ```OPTIONAL``` mandatory when EnableBasicAuth=true
+| BasicAuthPassword | | ```OPTIONAL``` mandatory when EnableBasicAuth=true
 | LogDirectory  | "log" | ```OPTIONAL``` directory where logs are stored. 
 | StateDirectory  | "" | ```OPTIONAL``` directory where current state of load balancer is saved. By default current directory.
 | Verbose  | false | ```OPTIONAL``` verbosity of logs

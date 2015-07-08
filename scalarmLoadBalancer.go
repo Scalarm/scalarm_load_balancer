@@ -10,6 +10,7 @@ import (
 	"runtime"
 
 	"github.com/natefinch/lumberjack"
+	"github.com/rcrowley/go-tigertonic"
 	"github.com/scalarm/scalarm_load_balancer/handler"
 	"github.com/scalarm/scalarm_load_balancer/services"
 )
@@ -26,11 +27,10 @@ func main() {
 	}
 	config, err := LoadConfig(configFile)
 	if err != nil {
-		log.Fatal("An error occurred while loading configuration: " + configFile + "\n" + err.Error())
+		log.Fatalf("An error occurred while loading configuration: %v\n%v", configFile, err.Error())
 	}
 
 	//specified logging configuration
-	fmt.Println(config.LogDirectory)
 	log.SetOutput(&lumberjack.Logger{
 		Dir:        config.LogDirectory,
 		MaxSize:    100 * lumberjack.Megabyte,
@@ -56,22 +56,26 @@ func main() {
 	//setting routing
 	director := handler.ReverseProxyDirector(context)
 	reverseProxy := &httputil.ReverseProxy{Director: director, Transport: TransportCert}
-	http.Handle("/", handler.Context(nil, handler.Websocket(director, reverseProxy)))
+	http.Handle("/", handler.ContextWithoutLogging(nil, handler.Websocket(director, reverseProxy)))
 
-	http.Handle("/register", handler.Authentication(
-		config.PrivateLoadBalancerAddress,
-		handler.Context(
-			context,
-			handler.ServicesManagment(handler.Registration))))
-
-	http.Handle("/deregister", handler.Authentication(
-		config.PrivateLoadBalancerAddress,
-		handler.Context(
-			context,
-			handler.ServicesManagment(handler.Deregistration))))
-
+	// setting registrations handlers
+	registrationHandler := handler.Context(context, handler.ServicesManagment(handler.Registration))
+	deregistrationHandler := handler.Context(context, handler.ServicesManagment(handler.Deregistration))
+	// wrapping registration handlers into host filter
+	if !config.DisableRegistrationHostFilter {
+		registrationHandler = handler.HostFilter(config.PrivateLoadBalancerAddress, registrationHandler)
+		deregistrationHandler = handler.HostFilter(config.PrivateLoadBalancerAddress, deregistrationHandler)
+	}
+	//wrapping registration handlers into basic auth
+	if config.EnableBasicAuth {
+		credentials := map[string]string{config.BasicAuthLogin: config.BasicAuthPassword}
+		registrationHandler = tigertonic.HTTPBasicAuth(credentials, "scalarm", registrationHandler)
+		deregistrationHandler = tigertonic.HTTPBasicAuth(credentials, "scalarm", deregistrationHandler)
+	}
+	// setting routes
+	http.Handle("/register", registrationHandler)
+	http.Handle("/deregister", deregistrationHandler)
 	http.Handle("/list", handler.Context(context, handler.List))
-
 	http.HandleFunc("/error", handler.RedirectionError)
 
 	//starting periodical multicast addres sending
@@ -93,13 +97,13 @@ func main() {
 					Addr: ":80",
 					Handler: http.HandlerFunc(
 						func(w http.ResponseWriter, r *http.Request) {
-							http.Redirect(w, r, "https://"+r.Host+r.RequestURI,
+							http.Redirect(w, r, fmt.Sprintf("https://%v%v", r.Host, r.RequestURI),
 								http.StatusMovedPermanently)
 						}),
 				}
 				err = serverHTTP.ListenAndServe()
 				if err != nil {
-					log.Fatal("An error occurred while running service on port 80\n" + err.Error())
+					log.Fatalf("An error occurred while running service on port 80\n%v", err.Error())
 				}
 			}()
 		}
@@ -107,6 +111,6 @@ func main() {
 		err = server.ListenAndServeTLS(config.CertFilePath, config.KeyFilePath)
 	}
 	if err != nil {
-		log.Fatal("An error occurred while running service on port " + config.Port + "\n" + err.Error())
+		log.Fatalf("An error occurred while running service on port %v\n%v", config.Port, err.Error())
 	}
 }

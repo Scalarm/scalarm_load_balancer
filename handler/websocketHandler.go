@@ -48,7 +48,7 @@ func Websocket(director func(*http.Request), h http.Handler) contextHandlerFunct
 
 		if err != nil {
 			log.Printf("Websocket connection failed: %v", err.Error())
-			return newHTTPError(errorMessage, 404)
+			return newHTTPError(errorMessage, http.StatusNotFound)
 		}
 		defer d.Close()
 
@@ -56,20 +56,20 @@ func Websocket(director func(*http.Request), h http.Handler) contextHandlerFunct
 		hj, ok := w.(http.Hijacker)
 		if !ok {
 			log.Printf("Websocket connection failed: Casting to http.Hijacker failed")
-			return newHTTPError(errorMessage, 500)
+			return newHTTPError(errorMessage, http.StatusInternalServerError)
 		}
 		nc, _, err := hj.Hijack()
 		if err != nil {
 			log.Printf("Websocket connection failed: %v", err.Error())
-			return newHTTPError(errorMessage, 500)
+			return newHTTPError(errorMessage, http.StatusInternalServerError)
 		}
 		defer nc.Close()
 
-		//copying requst to target and responce to client
+		//copying requst to target and response to client
 		err = req.Write(d)
 		if err != nil {
 			log.Printf("Websocket connection failed: %v", err.Error())
-			return newHTTPError(errorMessage, 404)
+			return newHTTPError(errorMessage, http.StatusNotFound)
 		}
 
 		errc := make(chan error, 2)
